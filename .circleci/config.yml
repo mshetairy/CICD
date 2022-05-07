@@ -258,6 +258,7 @@ jobs:
             # Your code here
             cd backend
             npm install
+            npm audit fix
             npm run migrations > migrations_dump.txt
             #exit 1
       - run:
