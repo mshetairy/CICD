@@ -417,11 +417,12 @@ jobs:
       - run:
           name: get last id of workflow
           command: |
-            aws cloudformation list-exports \
+            export oldWorkFlowId=$(aws cloudformation list-exports \
               --query "Exports[?Name==\`workflowid\`].Value" \
               --no-paginate \
-              --output text > lastFlow.txt
-            cat lastFlow.txt
+              --output text)
+            echo $oldWorkFlowId  > ~/lastFlow.txt
+            cat ~/lastFlow.txt
       - run:
           name: Update cloudfront distribution
           command: |
@@ -429,8 +430,10 @@ jobs:
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
             --stack-name InitialStack \
-            --parameter-overrides workflowid="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --parameter-overrides workflowid="${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople
+            echo oldWorkFlowId :"${oldWorkFlowId}"
+            echo current work flow id  :"${CIRCLE_WORKFLOW_ID:0:7}"  
       # Here's where you will add some code to rollback on failure  
       - persist_to_workspace:
           root: .
