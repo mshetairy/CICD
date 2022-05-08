@@ -43,7 +43,7 @@ commands:
           when: on_fail
           command: |
             aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
-            exit 1
+            
       - run:
           name: Destroy S3 infrastructure
           when: on_fail
@@ -392,7 +392,7 @@ jobs:
             if curl -s ${URL} | grep "Welcome"
             then
                 # Change this to 0 after the job fails
-              exit 1
+              exit 0
             else
               exit 1
             fi
@@ -401,21 +401,46 @@ jobs:
           Workflow_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
 
       - revert-migrations
-#   cloudfront-update:
-#     docker:
-#       # Docker image here that supports AWS CLI
-#     steps:
-#       # Checkout code from git
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # your code here
-#       - run:
-#           name: Update cloudfront distribution
-#           command: |
-#             # your code here
-#       # Here's where you will add some code to rollback on failure  
+  cloudfront-update:
+    docker:
+      # Docker image here that supports AWS CLI
+      - image: amazon/aws-cli
+    steps:
+      # Checkout code from git
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            # your code here
+            yum -y install tar gzip
+      - attach_workspace:
+          at: .
+      - run:
+          name: get last id of workflow
+          command: |
+            aws cloudformation list-exports \
+              --query "Exports[?Name==\`workflowid\`].Value" \
+              --no-paginate \
+              --output text > lastFlow.txt
+            cat lastFlow.txt
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            # your code here
+            aws cloudformation deploy \
+            --template-file .circleci/files/cloudfront.yml \
+            --stack-name InitialStack \
+            --parameter-overrides workflowid="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --tags project=udapeople
+      # Here's where you will add some code to rollback on failure  
+      - persist_to_workspace:
+          root: .
+          paths:
+            - lastFlow.txt
+      - destroy-environment:
+          Workflow_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
 
+      - revert-migrations
 # cleanup:
 #     docker:
 #       # Docker image here
@@ -464,7 +489,7 @@ workflows:
           requires: [run-migrations]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
-      # - cloudfront-update:
-      #     requires: [smoke-test]
+      - cloudfront-update:
+          requires: [smoke-test]
       # - cleanup:
       #     requires: [cloudfront-update]
