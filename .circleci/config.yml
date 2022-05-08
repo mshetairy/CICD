@@ -429,7 +429,7 @@ jobs:
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
             --stack-name InitialStack \
-            --parameter-overrides workflowid="${CIRCLE_WORKFLOW_ID:0:7}" \
+            --parameter-overrides workflowid="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople
       # Here's where you will add some code to rollback on failure  
       - persist_to_workspace:
