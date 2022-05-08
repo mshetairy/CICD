@@ -39,10 +39,10 @@ commands:
         default: ${CIRCLE_WORKFLOW_ID:0:7}
     steps:
       - run:
-          name: Destroy environments
+          name: Destroy backend
           when: on_fail
           command: |
-            aws cloudformation delete-stack --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
             exit 1
       - run:
           name: Destroy S3 infrastructure
@@ -67,7 +67,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS=$(curl --insecure  https://kvdb.io/SbW9vd52JQrKJCBQX6d3/migration_<< parameters.Workflow_ID >>)
+            SUCCESS=$(curl --insecure  https://kvdb.io/QpSbW9vd52JQrKJCBQX6d3/migration_<< parameters.Workflow_ID >>)
             # Logic for reverting the database state
             if (( $SUCCESS == 1 ));
             then
@@ -265,7 +265,7 @@ jobs:
           command: |
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
-              curl https://kvdb.io/SbW9vd52JQrKJCBQX6d3/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+              curl https://kvdb.io/QpSbW9vd52JQrKJCBQX6d3/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             fi
           # Here's where you will add some code to rollback on failure        
       - destroy-environment:
