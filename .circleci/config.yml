@@ -258,7 +258,6 @@ jobs:
             # Your code here
             cd backend
             npm install
-            npm audit fix --audit-level=critical --force
             npm run migrations > migrations_dump.txt
             npm audit fix --audit-level=critical --force
             #exit 1
