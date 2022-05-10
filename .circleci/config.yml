@@ -415,12 +415,13 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: get last id of workflow
+          name: get last stack  workflow id 
           command: |
             aws cloudformation list-exports \
               --query "Exports[?Name==\`workflowid\`].Value" \
               --no-paginate \
-              --output text > lastFlow.txt
+                > lastFlow.txt
+            cat lastFlow.txt
             echo "Last workflow id is:"  
             cat lastFlow.txt
       - run:
@@ -469,7 +470,7 @@ jobs:
             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
                     --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
             echo Stack names: "${STACKS[@]}"     
-            if [[ "udapeople-${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}" ]]
+            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}" ]]
             then
               echo "No Old stack to be deleted"
             else
