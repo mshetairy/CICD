@@ -1,0 +1,10 @@
+[url01]
+https://github.com/abdallakamesh/c3-projectstarter
+[url02]
+http://udapeople-d52a75c.s3-website-us-east-1.amazonaws.com/#/employees
+[url03]
+http://d1qp4eiy9lzscz.cloudfront.net/
+[url04]
+http://50.16.70.138:3030/api/status
+[url05]
+http://ec2-34-202-230-77.compute-1.amazonaws.com:9090/
