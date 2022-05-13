@@ -432,7 +432,7 @@ jobs:
             --parameter-overrides workflowid="${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople
             aws cloudfront create-invalidation \
-            --distribution-id E4LU8LODBLMCW \
+            --distribution-id EL699Y8LDMH7H \
             --paths "/*"
             echo current work flow id  :"${CIRCLE_WORKFLOW_ID:0:7}"  
       # Here's where you will add some code to rollback on failure  
