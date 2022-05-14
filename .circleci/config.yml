@@ -415,13 +415,14 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: Retrieve old stack workflow ID
+          name: save old workflow id to kvdb
           command: |
-            aws cloudformation list-exports \
+            export OLD_WORKFLOW_ID=$(aws cloudformation list-exports \
               --query "Exports[?Name==\`workflowid\`].Value" \
-              --no-paginate \
-              --output text > lastFlow.txt
-            cat lastFlow.txt
+              --no-paginate --output text )
+            echo "Old workflow ID: ${OLD_WORKFLOW_ID}"  
+            curl https://kvdb.io/QpSbW9vd52JQrKJCBQX6d3/old_workflow_id -d "${OLD_WORKFLOW_ID}"
+            
       - run:
           name: Update cloudfront distribution
           command: |
@@ -431,9 +432,6 @@ jobs:
             --stack-name InitialStack \
             --parameter-overrides workflowid="${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople
-            aws cloudfront create-invalidation \
-            --distribution-id EL699Y8LDMH7H \
-            --paths "/*"
             echo current work flow id  :"${CIRCLE_WORKFLOW_ID:0:7}"  
       # Here's where you will add some code to rollback on failure  
       - persist_to_workspace:
@@ -461,13 +459,13 @@ jobs:
           name: Remove old stacks and files
           command: |
             # Fetch the Old workflow ID
-            cat ~/workspace/lastFlow.txt
-            export OldWorkflowID=$(cat ~/workspace/lastFlow.txt)
-            export CurrentWorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
-            if [[ "$CurrentWorkflowID" == "$OldWorkflowID" ]]
+            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+             --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+            echo Stack names: "${STACKS[@]}" 
+            export OldWorkflowID =$(curl --insecure https://kvdb.io/QpSbW9vd52JQrKJCBQX6d3/old_workflow_id)
+            echo old workflow ID: "${OldWorkflowID}"   
+            if [[ "${STACKS[@]}" =~ "$OldWorkflowID" ]]
             then
-              echo "No Old stack to be deleted"
-            else
               echo "will delete old version"
               aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
