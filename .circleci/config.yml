@@ -403,17 +403,17 @@ jobs:
   cloudfront-update:
     docker:
       # Docker image here that supports AWS CLI
-      - image: amazon/aws-cli
+      - image: cimg/base:stable
     steps:
       # Checkout code from git
       - checkout
+      - install_of_awscli
+      - install_of_nodejs
       - run:
           name: Install dependencies
           command: |
             # your code here
             yum -y install tar gzip
-      - attach_workspace:
-          at: .
       - run:
           name: save old workflow id to kvdb
           command: |
@@ -434,27 +434,23 @@ jobs:
             --tags project=udapeople
             echo current work flow id  :"${CIRCLE_WORKFLOW_ID:0:7}"  
       # Here's where you will add some code to rollback on failure  
-      - persist_to_workspace:
-          root: .
-          paths:
-            - lastFlow.txt
       - destroy-environment:
           Workflow_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
-
       - revert-migrations
+
   cleanup:
     docker:
       # Docker image here 
-      - image: amazon/aws-cli
+      - image: cimg/base:stable
     steps:
       - checkout
+      - install_of_awscli
+      - install_of_nodejs
       - run:
           name: Install dependencies
           command: |
             yum install -y gcc-c++ make 
             yum -y install tar gzip jq
-      - attach_workspace:
-          at: ~/workspace/
       - run:
           name: Remove old stacks and files
           command: |
