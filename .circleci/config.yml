@@ -229,7 +229,7 @@ jobs:
       - install_of_ansible
       # Add ssh keys with fingerprint       
       - add_ssh_keys:
-          fingerprints: ["d2:11:c0:4d:50:e3:6d:95:9e:fa:dd:89:9e:92:ea:5a"]
+          fingerprints: ["25:d8:8e:51:98:ec:a8:92:bd:d5:26:32:8a:8b:fa:53"]
       # attach workspace
       - attach_workspace:
           at: ~/
@@ -321,7 +321,7 @@ jobs:
 
       # Add ssh keys with fingerprint
       - add_ssh_keys:
-          fingerprints: ["d2:11:c0:4d:50:e3:6d:95:9e:fa:dd:89:9e:92:ea:5a"] 
+          fingerprints: ["25:d8:8e:51:98:ec:a8:92:bd:d5:26:32:8a:8b:fa:53"] 
       - attach_workspace:
           at: ~/
       - restore_cache:
@@ -486,15 +486,15 @@ workflows:
               only: [master]
       - configure-infrastructure:
            requires: [deploy-infrastructure]
-      - run-migrations:
-           requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update:
-          requires: [smoke-test]
-      - cleanup:
-          requires: [cloudfront-update]
+      # - run-migrations:
+      #      requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+      # - deploy-backend:
+      #     requires: [run-migrations]
+      # - smoke-test:
+      #     requires: [deploy-backend, deploy-frontend]
+      # - cloudfront-update:
+      #     requires: [smoke-test]
+      # - cleanup:
+      #     requires: [cloudfront-update]
