@@ -173,9 +173,9 @@ jobs:
           command: |
              cd backend
              npm install
-             npm audit fix --force --audit-level=critical
              npm audit fix --audit-level=critical --force
              npm audit fix --audit-level=critical --force
+             npm audit --audit-level=critical
 
   deploy-infrastructure:
     docker:
@@ -332,7 +332,7 @@ jobs:
             cd backend
             npm install
       - run:
-          name: installing of required packages 
+          name: Package Backend
           command : |
             cd backend
             npm run build
@@ -397,8 +397,8 @@ jobs:
       # Here's where you will add some code to rollback on failure  
       - destroy-environment:
           Workflow_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
-
       - revert-migrations
+
   cloudfront-update:
     docker:
       # Docker image here that supports AWS CLI
@@ -418,8 +418,7 @@ jobs:
               --query "Exports[?Name==\`workflowid\`].Value" \
               --no-paginate --output text )
             echo "Old workflow ID: ${OLD_WORKFLOW_ID}"  
-            curl https://kvdb.io/QpSbW9vd52JQrKJCBQX6d3/old_workflow_id -d "${OLD_WORKFLOW_ID}"
-            
+            curl https://kvdb.io/QpSbW9vd52JQrKJCBQX6d3/old_workflow_id -d "${OLD_WORKFLOW_ID}"         
       - run:
           name: Update cloudfront distribution
           command: |
