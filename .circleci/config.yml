@@ -282,7 +282,7 @@ jobs:
       - install_of_awscli
       - install_of_nodejs 
       - restore_cache:
-          keys: [frontend-deps]
+          keys: [frontend-build]
       - run:
           name: Install dependencies
           command: |
@@ -318,14 +318,13 @@ jobs:
       - install_of_awscli
       - install_of_ansible 
       - install_of_nodejs
-
       # Add ssh keys with fingerprint
       - add_ssh_keys:
           fingerprints: ["25:d8:8e:51:98:ec:a8:92:bd:d5:26:32:8a:8b:fa:53"] 
       - attach_workspace:
           at: ~/
       - restore_cache:
-          keys: [backend-deps]
+          keys: [backend-build]
       - run:
           name: Install dependencies
           command: |
